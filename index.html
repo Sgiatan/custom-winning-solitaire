@@ -37,6 +37,7 @@
 			audio.src = 'https://github.com/Sgiatan/custom-winning-solitaire/raw/main/mixkit-chill-bro-494.mp3'; // Replace with the path to your music file
 			audio.loop = true;
 			audio.volume = 0.5;
+	    		audio.addEventListener('ended', function() { console.log('Audio finished playing'); });
 			audio.play();
 
 			var width = 100;
