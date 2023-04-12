@@ -31,8 +31,17 @@
 	    		canvas.style.backgroundColor = 'rgb(253, 250, 234)';
 
 			var context = canvas.getContext( '2d' );
+	    
+	    		var audio = new Audio();
 
-			var id = 52;
+			audio.src = 'path/to/music.mp3'; // Replace with the path to your music file
+
+			// Set other properties for the audio element (optional)
+			audio.loop = true; // Set to true if you want the music to loop
+			audio.volume = 0.5; // Set the volume of the music (0.0 to 1.0)
+
+			// Play the background music
+			audio.play();
 
 			var width = 100;
 			var height = 96;
@@ -45,13 +54,10 @@
 
 			var particles = [];
 
-			function Particle( id, x, y, sx, sy ) {
+			function Particle( x, y, sx, sy ) {
 
 				if ( sx === 0 ) sx = 2;
-
-				var cx = ( id % 4 ) * width;
-				var cy = Math.floor( id / 4 ) * height;
-
+				
 				this.update = function () {
 
 					x += sx;
@@ -85,9 +91,7 @@
 
 			var image = document.createElement( 'img' );
 			image.src = "https://raw.githubusercontent.com/Sgiatan/custom-winning-solitaire/main/waffle%20100x96%20outline.png"
-			function throwCard( x, y ) {
-
-				id > 0 ? id -- : id = 51;
+			function throwImage( x, y ) {
 
 				var particle = new Particle( id, x, y, Math.floor( Math.random() * 6 - 3 ) * 2, - Math.random() * 16 );
 				particles.push( particle );
@@ -96,7 +100,7 @@
 
 			document.addEventListener( 'pointerdown', function ( event ) {
 
-				throwCard( event.clientX * dpr, event.clientY * dpr );
+				throwImage( event.clientX * dpr, event.clientY * dpr );
 
 			} );
 
@@ -104,7 +108,7 @@
 
 				if ( event.pressure === 0 ) return;
 
-				throwCard( event.clientX * dpr, event.clientY * dpr );
+				throwImage( event.clientX * dpr, event.clientY * dpr );
 
 			} );
 
