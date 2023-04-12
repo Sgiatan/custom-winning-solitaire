@@ -1,88 +1,51 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Windows Solitaire Winning Animation</title>
-    <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-        }
-        canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-        }
-    </style>
-</head>
-<body>
-    <canvas id="canvas"></canvas>
-    <script>
-        // Canvas setup
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+const canvas = document.createElement("canvas");
+document.body.appendChild(canvas);
+const ctx = canvas.getContext("2d");
 
-        // Image setup
-        const image = new Image();
-        image.src = 'https://raw.githubusercontent.com/Sgiatan/custom-winning-solitaire/main/waffle%20real.png'; // Replace with your desired image URL
+// Replace with your image file name
+const imageFileName = "your_image_filename.jpg"; 
 
-        // Animation variables
-        let imageX = 0;
-        let imageY = 0;
-        let velX = 0;
-        let velY = 0;
-        let gravity = 0.5;
-        let angle = 0;
-        let rotateSpeed = 0.05;
+// Load the image
+const image = new Image();
+image.src = imageFileName;
 
-        // Main game loop
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+// Set canvas size to match window size
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+window.addEventListener("resize", () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
 
-            // Update the position of the image
-            imageX += velX;
-            imageY += velY;
+const images = [];
 
-            // Update the vertical velocity of the image due to gravity
-            velY += gravity;
+// Spawn a new image on click
+canvas.addEventListener("click", (event) => {
+  const x = event.clientX;
+  const y = event.clientY;
+  const imageCopy = new Image();
+  imageCopy.src = imageFileName;
+  images.push({ x, y, image: imageCopy });
+});
 
-            // Check for collision with the screen edges
-            if (imageX < 0 || imageX + image.width > canvas.width) {
-                velX = -velX;
-            }
-            if (imageY < 0) {
-                velY = Math.abs(velY);  // Reverse vertical velocity after bouncing on top
-            }
-            if (imageY + image.height > canvas.height) {
-                velY = -velY * 0.9;  // Reverse vertical velocity with damping factor after bouncing on bottom
-                imageY = canvas.height - image.height;
-            }
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  images.forEach((imageObj) => {
+    const { x, y, image } = imageObj;
+    const imageWidth = 2 * canvas.width / 100; // Calculate image width as 2% of canvas width
+    const imageHeight = (image.height / image.width) * imageWidth; // Maintain aspect ratio
+    ctx.drawImage(image, x - imageWidth / 2, y - imageHeight / 2, imageWidth, imageHeight);
+    imageObj.y += 3; // Update y position with velocity
+    imageObj.y = Math.min(imageObj.y, canvas.height - imageHeight); // Keep image within canvas height
 
-            // Rotate the image
-            ctx.save();
-            ctx.translate(imageX + image.width / 2, imageY + image.height / 2);
-            ctx.rotate(angle);
-            ctx.drawImage(image, -image.width / 2, -image.height / 2);
-            ctx.restore();
-            angle += rotateSpeed;
+    // Add bounce effect on bottom collision
+    if (imageObj.y + imageHeight >= canvas.height) {
+      imageObj.y = canvas.height - imageHeight;
+      imageObj.y -= 10; // Reduce vertical velocity after bounce
+    }
+  });
+  requestAnimationFrame(animate);
+}
 
-            // Repeat the animation
-            requestAnimationFrame(animate);
-        }
-
-        // Event listener for mouse click to spawn a new image
-        canvas.addEventListener('mousedown', function(event) {
-            imageX = event.clientX - image.width / 2;
-            imageY = event.clientY - image.height / 2;
-            velX = Math.random() * 10 - 5;
-            velY = -Math.random() * 10;
-        });
-
-        // Start the animation
-        animate();
-    </script>
-</body>
-</html>
+// Start the animation
+animate();
