@@ -27,7 +27,7 @@
 
         // Image setup
         const image = new Image();
-        image.src = 'your_image_url_here'; // Replace with your desired image URL
+        image.src = 'https://raw.githubusercontent.com/Sgiatan/custom-winning-solitaire/main/waffle%20real.png'; // Replace with your desired image URL
 
         // Animation variables
         let imageX = 0;
