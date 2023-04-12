@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -19,7 +18,6 @@
     </style>
 </head>
 <body>
-    
     <canvas id="canvas"></canvas>
     <script>
 			var dpr = window.devicePixelRatio;
@@ -32,7 +30,15 @@
 	    		canvas.style.backgroundColor = 'rgb(253, 250, 234)';
 
 			var context = canvas.getContext( '2d' );
-			
+	    
+	    		var audio = new Audio();
+			audio.src = 'https://github.com/Sgiatan/custom-winning-solitaire/raw/main/mixkit-chill-bro-494.mp3'; // Replace with the path to your music file
+			audio.loop = true; // Set to true if you want the music to loop
+			audio.volume = 0.5; // Set the volume of the music (0.0 to 1.0)
+			audio.play();
+
+			var id = 52;
+
 			var width = 100;
 			var height = 96;
 
@@ -44,10 +50,13 @@
 
 			var particles = [];
 
-			function Particle( x, y, sx, sy ) {
+			function Particle( id, x, y, sx, sy ) {
 
 				if ( sx === 0 ) sx = 2;
-				
+
+				var cx = ( id % 4 ) * width;
+				var cy = Math.floor( id / 4 ) * height;
+
 				this.update = function () {
 
 					x += sx;
@@ -81,7 +90,9 @@
 
 			var image = document.createElement( 'img' );
 			image.src = "https://raw.githubusercontent.com/Sgiatan/custom-winning-solitaire/main/waffle%20100x96%20outline.png"
-			function throwImage( x, y ) {
+			function throwCard( x, y ) {
+
+				id > 0 ? id -- : id = 51;
 
 				var particle = new Particle( id, x, y, Math.floor( Math.random() * 6 - 3 ) * 2, - Math.random() * 16 );
 				particles.push( particle );
@@ -90,7 +101,7 @@
 
 			document.addEventListener( 'pointerdown', function ( event ) {
 
-				throwImage( event.clientX * dpr, event.clientY * dpr );
+				throwCard( event.clientX * dpr, event.clientY * dpr );
 
 			} );
 
@@ -98,7 +109,7 @@
 
 				if ( event.pressure === 0 ) return;
 
-				throwImage( event.clientX * dpr, event.clientY * dpr );
+				throwCard( event.clientX * dpr, event.clientY * dpr );
 
 			} );
 
