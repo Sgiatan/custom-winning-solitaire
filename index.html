@@ -1,51 +1,105 @@
-const canvas = document.createElement("canvas");
-document.body.appendChild(canvas);
-const ctx = canvas.getContext("2d");
 
-// Replace with your image file name
-const imageFileName = "your_image_filename.jpg"; 
 
-// Load the image
-const image = new Image();
-image.src = imageFileName;
+			var dpr = window.devicePixelRatio;
 
-// Set canvas size to match window size
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-window.addEventListener("resize", () => {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-});
+			var canvas = document.getElementById( 'canvas' );
+			canvas.width = window.innerWidth * dpr;
+			canvas.height = window.innerHeight * dpr;
+			canvas.style.width = '100%';
+			canvas.style.height = '100%';
 
-const images = [];
+			var context = canvas.getContext( '2d' );
 
-// Spawn a new image on click
-canvas.addEventListener("click", (event) => {
-  const x = event.clientX;
-  const y = event.clientY;
-  const imageCopy = new Image();
-  imageCopy.src = imageFileName;
-  images.push({ x, y, image: imageCopy });
-});
+			var id = 52;
 
-function animate() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  images.forEach((imageObj) => {
-    const { x, y, image } = imageObj;
-    const imageWidth = 2 * canvas.width / 100; // Calculate image width as 2% of canvas width
-    const imageHeight = (image.height / image.width) * imageWidth; // Maintain aspect ratio
-    ctx.drawImage(image, x - imageWidth / 2, y - imageHeight / 2, imageWidth, imageHeight);
-    imageObj.y += 3; // Update y position with velocity
-    imageObj.y = Math.min(imageObj.y, canvas.height - imageHeight); // Keep image within canvas height
+			var width = 71;
+			var height = 96;
 
-    // Add bounce effect on bottom collision
-    if (imageObj.y + imageHeight >= canvas.height) {
-      imageObj.y = canvas.height - imageHeight;
-      imageObj.y -= 10; // Reduce vertical velocity after bounce
-    }
-  });
-  requestAnimationFrame(animate);
-}
+			var cwidth = width * Math.round( dpr );
+			var cheight = height * Math.round( dpr );
+			
+			var cwidthhalf = cwidth / 2;
+			var cheighthalf = cheight / 2;
 
-// Start the animation
-animate();
+			var particles = [];
+
+			function Particle( id, x, y, sx, sy ) {
+
+				if ( sx === 0 ) sx = 2;
+
+				var cx = ( id % 4 ) * width;
+				var cy = Math.floor( id / 4 ) * height;
+
+				this.update = function () {
+
+					x += sx;
+					y += sy;
+
+					if ( x < ( - cwidthhalf ) || x > ( canvas.width + cwidthhalf ) ) {
+
+						var index = particles.indexOf( this );
+						particles.splice( index, 1 );
+
+						return false;
+
+					}
+
+					if ( y > canvas.height - cheighthalf ) {
+
+						y = canvas.height - cheighthalf;
+						sy = - sy * 0.85;
+
+					}
+
+					sy += 0.98;
+
+					context.drawImage( image, cx, cy, width, height, Math.floor( x - cwidthhalf ), Math.floor( y - cheighthalf ), cwidth, cheight );
+
+					return true;
+
+				}
+
+			}
+
+			var image = document.createElement( 'img' );
+			image.src = "https://raw.githubusercontent.com/Sgiatan/custom-winning-solitaire/main/waffle%20real.png"
+			function throwCard( x, y ) {
+
+				id > 0 ? id -- : id = 51;
+
+				var particle = new Particle( id, x, y, Math.floor( Math.random() * 6 - 3 ) * 2, - Math.random() * 16 );
+				particles.push( particle );
+
+			}
+
+			document.addEventListener( 'pointerdown', function ( event ) {
+
+				throwCard( event.clientX * dpr, event.clientY * dpr );
+
+			} );
+
+			document.addEventListener( 'pointermove', function ( event ) {
+
+				if ( event.pressure === 0 ) return;
+
+				throwCard( event.clientX * dpr, event.clientY * dpr );
+
+			} );
+
+			function animate() {
+
+				var i = 0, l = particles.length;
+
+				while ( i < l ) {
+
+					particles[ i ].update() ? i ++ : l --;
+
+				}
+				
+				requestAnimationFrame( animate );
+
+			}
+
+			requestAnimationFrame( animate );
+
+		
