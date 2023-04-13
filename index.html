@@ -79,9 +79,11 @@
 					}
 
 					sy += 0.98;
-
+					
+					context.save(); // Save the current canvas state
+					context.rotate(0.2); // Rotate the canvas by the desired angle in radians
 					context.drawImage( image, 0, 0, width, height, Math.floor( x - cwidthhalf ), Math.floor( y - cheighthalf ), cwidth, cheight );
-
+					context.restore();
 					return true;
 
 				}
